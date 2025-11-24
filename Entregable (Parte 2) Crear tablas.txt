@@ -1,0 +1,39 @@
+CREATE TABLE ATblAlumno
+(
+CodAlum varchar(10) Primary Key,	/*Establecer la Llave Principal*/
+NomAlum varchar(25) Not Null,		/*El campo debe contener datos (No Nulo)*/
+ApePatAlum varchar(25) Not Null,
+ApeMatAlum varchar(25) Not Null,
+DirAlum varchar(40),			/*El campo puede estar vacío*/
+TlfAlum varchar(9)
+);
+
+
+CREATE TABLE ATblCurso
+(
+CodCurso varchar(6) Primary Key,	/*Establecer la Llave Principal*/
+NomCurso varchar(25) Not Null		/*El campo debe contener datos (No Nulo)*/
+);
+
+
+CREATE TABLE ATblMatricula
+(
+CodMatri varchar(7) Primary Key,	/*Establecer la Llave Principal*/
+FecMatri date Not Null,			/*El campo debe contener datos (No Nulo)*/
+CodAlum varchar(10) Not Null,		/*Debe coincidir con TblAlumno.CodAlum*/
+Foreign Key (CodAlum)			/*Establecer la Llave Foránea: sirve ...*/
+References ATblAlumno(CodAlum)		/*... para la relación entre Tablas*/
+);
+
+
+CREATE TABLE ATblDetalleMatricula
+(
+CodMatri varchar(7),
+CodCurso varchar(6),
+NotCurso int,
+Primary Key (CodMatri, CodCurso),	/*Establecer la Llave Principal (2 campos)*/
+Foreign Key (CodMatri)			/*Establecer la Llave Foránea para relaciones*/
+References ATblMatricula(CodMatri),
+Foreign Key (CodCurso)			/*Establecer la Llave Foránea para relaciones*/
+References ATblCurso(CodCurso)
+)

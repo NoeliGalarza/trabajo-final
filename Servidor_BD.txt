@@ -1,0 +1,114 @@
+Instalar Putty
+.\Admin
+
+[Actualizar]
+dnf update -y
+
+[Instalar Apache]
+dnf install httpd -y
+
+[Configurar Firewall]
+
+firewall-cmd --permanent --add-service=http
+firewall-cmd --permanent --add-service=https
+firewall-cmd --reload
+
+[Habilitar Apache]
+systemctl enable httpd
+systemctl start httpd
+systemctl status httpd
+
+[Instalar PHP]
+dnf install -y https://rpms.remirepo.net/enterprise/remi-release-9.rpm
+dnf module reset php
+dnf module enable php:remi-8.4
+
+dnf install -y php php-cli php-fpm php-json php-common php-mysqlnd php-zip php-gd php-mbstring php-curl php-xml php-pear php-bcmath
+
+php -v
+
+systemctl start php-fpm
+systemctl enable php-fpm
+systemctl status php-fpm
+systemctl restart httpd
+
+[Instalar nano]
+dnf install nano -y
+
+[Crear WEB]
+nano /var/www/html/index.php
+
+<html>
+  <head>
+    <title>--EMPRESA--</title>
+  </head>
+  <body>
+    <?php
+      echo '<p>Bienvenido...</p>';
+    ?>
+  </body>
+</html>
+
+[Instalar MariaDB]
+dnf list mariadb
+dnf install mariadb-server -y
+mariadb --version
+systemctl enable mariadb
+systemctl start mariadb
+systemctl status mariadb
+
+mariadb -u root -p
+
+CREATE DATABASE BDEJEMPLO;
+USE BDEJEMPLO;
+CREATE TABLE TBLPERSONA 
+ (CODIPERSO CHAR(2) PRIMARY KEY,
+  NOMBREPERSO VARCHAR(15));
+INSERT INTO TBLPERSONA VALUES ('01','Juan');
+INSERT INTO TBLPERSONA VALUES ('02','Ana');
+SELECT * FROM TBLPERSONA;
+exit
+
+mysql_secure_installation
+
+systemctl start httpd mariadb
+systemctl enable httpd mariadb
+mariadb -u root -p
+CREATE USER 'admin'@'localhost' IDENTIFIED BY '12345678';
+GRANT ALL PRIVILEGES ON BDEJEMPLO.* TO 'admin'@'localhost';
+FLUSH PRIVILEGES;
+exit
+
+nano /var/www/html/index.php
+
+<?php
+  $servername = "localhost";
+  $username = "admin";
+  $password = "12345678";
+  $dbname = "BDEJEMPLO";
+  $conn = new mysqli($servername, $username, $password, $dbname);
+  if ($conn->connect_error)
+  {
+    die("Error conn".$conn->connect_error);
+  }
+?>
+
+<html>
+  <head>
+    <title>--EMPRESA--</title>
+  </head>
+  <body>
+    <?php
+      $sql = "SELECT * FROM TBLPERSONA;";
+$result = $conn->query($sql);
+$row = $result->fetch_assoc();
+echo $row["NOMBREPERSO"];
+
+    ?>
+  </body>
+</html>
+
+
+
+
+
